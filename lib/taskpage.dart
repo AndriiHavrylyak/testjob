@@ -14,13 +14,18 @@ class App extends StatefulWidget {
 }
 
 class AppState extends State<App> {
-  final textController = TextEditingController();
+  late TextEditingController textController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   bool valText = true;
   List<TodoInfo> todos = [];
 
+
   @override
   void initState() {
+    textController = TextEditingController()
+      ..addListener(() {
+        setState(() {});
+      });
     readTodos();
     super.initState();
   }
@@ -121,7 +126,20 @@ class AppState extends State<App> {
                         constraints: const BoxConstraints(),
                         padding: EdgeInsets.fromLTRB(30.0, 10.0, 30, 10.0),
                         icon: const Icon(Icons.add_outlined),
-                        onPressed: submitAddTodo,
+                        onPressed:   ()  {
+                          if (textController.text.replaceAll(" ", "").isNotEmpty) {
+                            setState(() {
+                              submitAddTodo();
+                              valText = true;
+                            });
+                          }
+                          else
+                          {
+                            setState(() {
+                              valText = false;
+                            });
+                          }
+                        }
                       )
                     ],
                   ),
@@ -132,23 +150,12 @@ class AppState extends State<App> {
                       style: TextStyle(fontSize: 22.0),
                       controller: textController,
                       autofocus: true,
-                      validator: (value) {
-                        if (value == null || value.replaceAll(" ", "").isNotEmpty){
-                          setState(() {
-                            valText = true;
-
-                          });
-                        } else {
-                          setState(() {
-                            valText = false;
-                          });
-                        }}
                   ),
                 ),
                 Align(
                     child: (valText == false)
                         ? Align(
-                        child: Text(("Задача пустая"),
+                        child: Text(("Задача пуста"),
                             style: TextStyle(
                                 fontSize: 25.0, color: Colors.red)),
                         alignment: Alignment.center)
